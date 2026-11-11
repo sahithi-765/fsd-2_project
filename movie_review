@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Telugu Movie Reviews</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: #10131c;
+      color: #f4f4f6;
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      padding: 26px 7%;
+      background: #191e2b;
+      border-bottom: 1px solid #303648;
+    }
+
+    header h1 {
+      margin: 0;
+      color: #ffc857;
+    }
+
+    header p { color: #c2c5ce; }
+
+    main {
+      width: min(900px, 90%);
+      margin: 32px auto;
+    }
+
+    .search-box, .result {
+      background: #191e2b;
+      border: 1px solid #303648;
+      border-radius: 12px;
+      padding: 22px;
+    }
+
+    .search-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    input, button {
+      padding: 12px;
+      border-radius: 7px;
+      font: inherit;
+    }
+
+    input {
+      flex: 1;
+      min-width: 0;
+      border: 1px solid #41485c;
+      background: #10131c;
+      color: white;
+    }
+
+    button {
+      border: 0;
+      background: #ffc857;
+      color: #171717;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover { background: #ffda82; }
+
+    #movieList {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .movie-option {
+      background: #191e2b;
+      border: 1px solid #303648;
+      border-radius: 9px;
+      padding: 15px;
+    }
+
+    .movie-option h3 { margin: 0 0 8px; }
+
+    .movie-option button { margin-top: 10px; }
+
+    .result { margin-top: 24px; }
+
+    .rating {
+      color: #ffc857;
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    .review-text {
+      line-height: 1.7;
+      color: #e0e2e8;
+    }
+
+    .notice {
+      color: #b6bbca;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    #message { color: #ffc857; }
+
+    @media (max-width: 550px) {
+      .search-row { flex-direction: column; }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>🎬 Telugu Movie Reviews</h1>
+    <p>Search a movie to see its sample rating and review.</p>
+  </header>
+
+  <main>
+    <section class="search-box">
+      <h2>Find a movie</h2>
+
+      <div class="search-row">
+        <input id="searchInput" type="search"
+          placeholder="Search: Jailer, Bahubali, Salaar...">
+        <button id="searchButton">Search</button>
+      </div>
+
+      <p id="message"></p>
+      <div id="movieList"></div>
+    </section>
+
+    <section id="result" class="result" hidden></section>
+
+    <p class="notice">
+      These are sample project reviews and ratings written for demonstration.
+      They are not quotes, public reviews, or verified audience scores.
+    </p>
+  </main>
+
+  <script>
+    // Sample project data: ratings and review text are editorial examples.
+    const movies = [
+      {
+        title: "Jailer",
+        rating: 4.0,
+        review: "A stylish action entertainer with a strong central performance and memorable moments. The pacing can feel uneven, but the confident presentation and crowd-pleasing scenes make it enjoyable."
+      },
+      {
+        title: "Baahubali",
+        rating: 4.5,
+        review: "An ambitious fantasy epic with impressive world-building, large-scale action, and an engaging story. Its length may feel demanding, but the spectacle and emotional stakes make it memorable."
+      },
+      {
+        title: "Mirchi",
+        rating: 3.8,
+        review: "A lively commercial film with romance, action, and family drama. The lead performance and entertaining scenes work well, though some plot turns feel familiar."
+      },
+      {
+        title: "Salaar",
+        rating: 3.9,
+        review: "A moody action drama with striking visuals and intense confrontations. The atmosphere is effective, but the dense story and long runtime may not suit every viewer."
+      },
+      {
+        title: "Saaho",
+        rating: 3.0,
+        review: "The film offers grand action sequences and stylish production, but its complicated plot can be hard to follow. Viewers who enjoy visual spectacle may find more to like than those looking for a simple story."
+      },
+      {
+        title: "Kalki 2898 AD",
+        rating: 4.1,
+        review: "A bold science-fiction fantasy with imaginative visuals and an intriguing world. Some sections move slowly, but the scale and ideas make it an interesting watch."
+      },
+      {
+        title: "Mr. Perfect",
+        rating: 3.7,
+        review: "A warm romantic drama about relationships and personal growth. The performances are likable, although a few familiar story beats keep it from feeling completely fresh."
+      },
+      {
+        title: "Darling",
+        rating: 3.8,
+        review: "A charming romantic entertainer with humor and an appealing lead performance. The lighter moments are fun, while some parts of the story follow a predictable path."
+      },
+      {
+        title: "The Raja Saab",
+        rating: 3.2,
+        review: "This sample review gives the film a mixed score: the concept and star presence can be appealing, but the overall result depends on how well its comedy, story, and spectacle come together."
+      },
+      {
+        title: "Radhe Shyam",
+        rating: 2.9,
+        review: "The film has elegant visuals and a romantic atmosphere, but the story may feel slow and emotionally distant. It is better suited to viewers who enjoy visual style over brisk pacing."
+      },
+      {
+        title: "Varsham",
+        rating: 3.8,
+        review: "A heartfelt romance with strong emotional moments and an engaging central pairing. A few familiar melodramatic elements remain, but the film has a warm, lasting appeal."
+      },
+      {
+        title: "Pournami",
+        rating: 3.3,
+        review: "The film creates an interesting atmosphere and offers graceful performances. Its slower storytelling and uneven pacing may make it less engaging for viewers expecting a fast-moving drama."
+      },
+      {
+        title: "Bujjigaadu",
+        rating: 3.5,
+        review: "An energetic action-romance with a distinctive lead character and entertaining stretches. The story can be uneven, but its lively tone gives it personality."
+      },
+      {
+        title: "Billa",
+        rating: 3.6,
+        review: "A sleek action film with stylish presentation and confident performances. The plot is familiar, but the visual flair and action make it a solid choice for genre fans."
+      }
+    ];
+
+    const searchInput = document.getElementById("searchInput");
+    const searchButton = document.getElementById("searchButton");
+    const movieList = document.getElementById("movieList");
+    const result = document.getElementById("result");
+    const message = document.getElementById("message");
+
+    function showResults() {
+      const query = searchInput.value.trim().toLowerCase();
+
+      movieList.replaceChildren();
+      result.hidden = true;
+
+      if (!query) {
+        message.textContent = "Type a movie title to search.";
+        return;
+      }
+
+      const matches = movies.filter(movie =>
+        movie.title.toLowerCase().includes(query)
+      );
+
+      if (matches.length === 0) {
+        message.textContent = "No matching movie found. Check the spelling and try again.";
+        return;
+      }
+
+      message.textContent = matches.length + " movie(s) found.";
+
+      // Show higher-rated matches first.
+      matches.sort((a, b) => b.rating - a.rating);
+
+      matches.forEach(movie => {
+        const card = document.createElement("article");
+        card.className = "movie-option";
+
+        const title = document.createElement("h3");
+        title.textContent = movie.title;
+
+        const score = document.createElement("p");
+        score.className = "rating";
+        score.textContent = "★ " + movie.rating.toFixed(1) + " / 5";
+
+        const button = document.createElement("button");
+        button.textContent = "Read review";
+        button.addEventListener("click", () => showReview(movie));
+
+        card.append(title, score, button);
+        movieList.appendChild(card);
+      });
+
+      // Automatically show the top result when the search matches one movie.
+      if (matches.length === 1) {
+        showReview(matches[0]);
+      }
+    }
+
+    function showReview(movie) {
+      result.replaceChildren();
+      result.hidden = false;
+
+      const title = document.createElement("h2");
+      title.textContent = movie.title;
+
+      const score = document.createElement("p");
+      score.className = "rating";
+      score.textContent = "Rating: " + movie.rating.toFixed(1) + " / 5";
+
+      const review = document.createElement("p");
+      review.className = "review-text";
+      review.textContent = movie.review;
+
+      result.append(title, score, review);
+    }
+
+    searchButton.addEventListener("click", showResults);
+
+    searchInput.addEventListener("keydown", event => {
+      if (event.key === "Enter") showResults();
+    });
+  </script>
+</body>
+</html>
